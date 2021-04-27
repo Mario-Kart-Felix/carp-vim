@@ -1,0 +1,98 @@
+Little Into
+My first introduction to vim was a bit over two years ago when I was doing my first internship, learning the basics of Rails development. Everyone at the company seemed to be hard core vim programmer and I was a second year Comp Sci student using something like Sublime and Eclipse (yah I know..). So essentially I was “peer pressured” to learn how to code with vim and it was surprisingly very exciting. I had no idea that vim editor can be so powerful. At the time I was a very novice vim user and my vimrc was the most basic that was enough to work on relatively small rails apps. After that internship I very rarely vim for day to day development. Jumping from Java to Scala to Python to JS it just seemed easier to use IDEs that worked great (however I always used vim plugins for those 😉) .
+Fast-forward three years, I just joined Shopify and last month and got back to Rails development. When I started I tried a few IDEs like Visual Code Studio which I very much like for Golang development, but it just did not work with the giant Rails project we have. Function definitions probably worked 10% of the time and a lot of the plugin were lagging. RubyMine is probably the best IDE out there for Rails development, but it feels very heavy, I personally don’t like how searching works and, honestly, I just couldn’t get used to all the keys shortcuts. That’s exactly when I remembered that once upon a time I used Vim! I knew it would take me quite a bit of time to get comfortable using vim again, but more concerning getting a setup with which my vim will be efficient and easy to use for Rails projects. But after a few weeks of struggling with IDEs and constantly switching between RubyMine and VSCode I decided that it would be worth investing the time into.
+It took me probably around a few days of talking to other developers in the office, reading blog posts online, and changing my vimrc file to setup a decent environment for rails development.
+If you’re switching to Vim as a Rails developer this might be very helpful to read. In this blog post I’ll show my basic setup that perfectly works for me and should work for anyone who is just setting up their vimrc 😉
+The basics
+Ok, first things first! Make sure that you have basic essential vim features enabled:
+set number
+syntax on
+filetype plugin indent on
+filetype on
+filetype indent on
+Those above make sure you have lines number, syntax highlighting, and filetype ident on.
+Next up, you want to customize auto file indentation for ruby and erb files:
+autocmd FileType ruby setlocal expandtab shiftwidth=2 tabstop=2
+autocmd FileType eruby setlocal expandtab shiftwidth=2 tabstop=2
+Next two plugins you would want are
+Plugin ‘vim-ruby/vim-ruby’
+Plugin ‘tpope/vim-rails’
+Those will give you better syntax highlighting and will allow you to call rails console or run tests from vim windows.
+If you do `==` on a single line or a visual block vim will automatically ident your Rails files. Cool, isn’t it? Veery useful 🙂
+File Navigation
+Ok, cool, we got syntax highlighting and indentation working, now we want something to navigate the files. If your project is relatively large it would be impossible to memorize where everything is.
+For file hierarchy, I use a popular nerdtree plugin. It is a truly essential plugin to have for any kind of development in vim. It shows that file structure of the project that every IDE out there has by default. You can see the current directory, look for a file, open/close folders and jump to currently opened files in the directory to see where they are.
+You can set it up so it automatically opens up with when you open file in vim (that’s what I did). I also remapped ‘trigger’ key to ‘-‘ (that will open close the nerdtree), and highlight of the current file in the tree window to ‘]’ (if you have multiple files open and press ‘]’ vim will highlight the current file in the nerdtree window — very useful).
+Here are my NerdTree settings:
+“ Files structure tree
+Plugin ‘scrooloose/nerdtree’
+map — :NERDTreeToggle<CR> “ open/close nerdtree window
+map <leader>r :NERDTreeFind<cr> “ this is the key to jump to the nerdtree window from any other window
+autocmd BufWinEnter * NERDTreeFind
+map ] :NERDTreeFind<CR> “ pressing this inside any open file in vim will jump to the nerdtree and highlight where that file is -> very useful when you have multiple files open at once
+Search 🔍
+Searching is everything when you deal with huge code bases. You need to constantly look for variables and methods usages, definitions and files based on the keywords you come across in the code.
+Thankfully there are a bunch of great plugins that make searching in vim painless. This is probably one of my favourite features. I really like how easy and fast searching in vim/terminal can be.
+Ok, so we want to be able to search for files. Probably the greatest plugin out there is Fuzzy search (FZF). It is just great! There is also popular Ctrl-P. They pretty much have the same functionality but I found FZF to be a bit faster so stick to it.
+FZF is a command line tool so to install vim support you have to install fzf first and only then fzf.vim.
+On Mac OSX you can just do it with homebrew
+brew install fzf
+After that just add to your .vimrc:
+Plugin ‘/usr/local/opt/fzf’
+Plugin ‘junegunn/fzf.vim’
+There are also a lot of things you can customizes like colours etc, so check out their GitHub repo for the instructions!
+“ remap envoke key
+nnoremap <silent> <C-z> :FZF<CR>
+I remapped the keys and all I have to do is press Ctrl-z and a search window pops up at the bottom (you can customize that too) and matches all the files in the directory as you type. Super fast! Once you found a file, you can choose it and open in the existing window or in the new horizontal or vertical split. Great, isn’t it?
+More searching
+Next one up is searching for various key words and function names in the files. This is essential for any development! For that you would want to install RipGrep. It is a great search tool. You can search for direct matches, regex expressions, and even specify files type or location for the search. Generally it searches through all the file under the current directory ignoring anything in .gitignore and binary files (who want to search through that..).
+Setup is very easy:
+brew install ripgrep
+Done! Now head to their Readme to learn all the functionality!
+Autocomplete
+I love autocomplete! ❤️ It saves me time! Lots of time! And prevent me from mistyping 😄
+So I use popular neocomplete!
+“ neocomplete Plugin
+Plugin ‘Shougo/neocomplete.vim’
+Function Definitions
+This is a hard one. The reason I tried to use RubyMine is because their Rails function definitions is the best out of all IDEs out there. Vim has a good well-known plugin C-tags that is intended todo the job. However, it is not that easy. There are two problems with it. First one is that it might not be able to handle giant projects and I heard people having problems with large code basis, however it seems to work fine for me.
+Second one is that Ruby is a dynamically typed language which makes it almost impossible to get the definitions right: if you have several classes implementing functions with the same name, you might not jump to the right one..yah…
+But It works well for jumping to class files and function definitions in the same file, overall I use it quite a big and ripgrep if I don’t end up in the right place 😉
+The way Ctags work is the index classes, methods, function names and store that in tags files for quick referencing. Ctags actually support about 40 programming languages and could be used not only for Rails development.
+To install:
+brew install ctags
+Now all you need to do is to run
+ctags -R.
+Inside a project directory
+This will perform the indexing step. Note that it might take a little while for large project stay patient 🙂
+Now you’re good to go and jump around!
+Usage:
+To just to a definition just press <C-]>
+on an identifier. If you want to go back press <C-t>. What’s cool is that all your jump calls are stored in a stack so you can always go back to your original files with <C-t> jumps!
+You can also remap the keys.
+And for situations when there are multiple matches you would probably just to the closest one in the directory tree but tags allow you to explore all the options; use :tnext and :tprev for jumping between found definitions. You can read more about that in the docs.
+Comments
+One feature that I just love in IDEs is that I can comment/uncomment code blocks with just a single key shortcut. If you’re like me I got some great news: yes, there is a vim plugin for that! And it’s called Commentary.
+Here is how to set it up:
+Plugin ‘tpope/vim-commentary’
+noremap \ :Commentary<CR>
+autocmd FileType ruby setlocal commentstring=#\ %s
+Spelling
+Sometimes I cannot spell… 😄
+You know when you committed something and about to push to a remote branch BUT WAIT you misspelled commit message 😢 that happened to me way too often in the last while and I got a spell checker plugin!
+Set it up, if you don’t pay that much attention to English as I do!
+“ Set SPELLCHeCK YYAH
+set spell spelllang=en_ca
+Bonus
+Vim Themes!! And colours setup! yayayaya 💃 🎉 🎆
+I am super visual person and I really care about the colours I see in my terminal (I do stare at my screen 8–12hrs a day 👀)
+And thankfully you can completely customize your vim!
+There are tooons of ready to go themes out there that you can just fins, plugin, and enjoy! (If you feel committed enough you can alway write your own *perfect* theme). I went with the first option for now!
+I really like VS Code colours so I found a theme that was built on it, it’s called Oceanic-next.
+And looks like (except I made my text bold 😄):
+
+They have instructions on how to install it on the GitHub page 🙂
+Conclusions
+So this is about it! This setup works just fine for me, but I am always keeping eye on new plugins and configurations that will make my development life faster and easier! One thing I want to really invest time into is keys remapping, setting up the perfect keys map for all the plugins is just :gold: maybe once I do I will write another post 😉
+If you are using some awesome plugins I haven’t covered please comment below, I’d love to learn about them! And thanks for reading this ❤️
+This is the link to my current .vimrc (it will probably be changing over time).
